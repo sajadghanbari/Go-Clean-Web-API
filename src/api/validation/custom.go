@@ -1,13 +1,13 @@
 package validation
 
 import (
+	"clean-web-api/common"
 	"log"
 	"regexp"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/spf13/afero/internal/common"
 )
- 
+
 func IranianMobileNumberValidator(fld validator.FieldLevel) bool {
 
 	value, ok := fld.Field().Interface().(string)
@@ -23,10 +23,11 @@ func IranianMobileNumberValidator(fld validator.FieldLevel) bool {
 }
 
 func PasswordValidator(fld validator.FieldLevel) bool {
-	value , ok := fld.Field().Interface().(string)
+	value, ok := fld.Field().Interface().(string)
 	if !ok {
 		fld.Param()
 		return false
 	}
+
 	return common.CheckPassword(value)
 }
