@@ -1,6 +1,7 @@
 package api
 
 import (
+	"clean-web-api/api/middlewares"
 	"clean-web-api/api/routers"
 	"clean-web-api/api/validation"
 	"clean-web-api/config"
@@ -21,6 +22,7 @@ func InitServer() {
 		val.RegisterValidation("password", validation.PasswordValidator, true)
 	}
 	
+	r.Use(middlewares.Cors(cfg))
 	r.Use(gin.Logger(), gin.Recovery())
 	
 	api := r.Group("/api")
