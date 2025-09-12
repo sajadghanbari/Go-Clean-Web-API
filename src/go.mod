@@ -2,8 +2,6 @@ module clean-web-api
 
 go 1.23.0
 
-toolchain go1.24.2
-
 require (
 	github.com/didip/tollbooth/v8 v8.0.1
 	github.com/gin-gonic/gin v1.10.1
