@@ -5,6 +5,7 @@ import (
 	"regexp"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/spf13/afero/internal/common"
 )
  
 func IranianMobileNumberValidator(fld validator.FieldLevel) bool {
@@ -19,4 +20,13 @@ func IranianMobileNumberValidator(fld validator.FieldLevel) bool {
 		log.Print(err.Error())
 	}
 	return res
+}
+
+func PasswordValidator(fld validator.FieldLevel) bool {
+	value , ok := fld.Field().Interface().(string)
+	if !ok {
+		fld.Param()
+		return false
+	}
+	return common.CheckPassword(value)
 }
