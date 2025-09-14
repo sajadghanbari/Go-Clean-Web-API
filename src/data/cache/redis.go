@@ -3,6 +3,7 @@ package cache
 import (
 	"clean-web-api/config"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/go-redis/redis/v7"
@@ -10,7 +11,7 @@ import (
 
 var redisClient *redis.Client
 
-func InitRedis(cfg *config.Config){
+func InitRedis(cfg *config.Config) error {
 	redisClient = redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%s",cfg.Redis.Host,cfg.Redis.Port),
 		Password: cfg.Redis.Password,
@@ -22,6 +23,11 @@ func InitRedis(cfg *config.Config){
 		IdleTimeout: 500 * time.Millisecond,
 		IdleCheckFrequency: cfg.Redis.IdleCheckFrequency * time.Microsecond,
 	})
+	_,err := redisClient.Ping().Result()
+	if err != nil{
+		log.Println(err)
+	}
+	return nil
 }
 
 func GetRedis() *redis.Client{

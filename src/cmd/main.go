@@ -4,12 +4,22 @@ import (
 	"clean-web-api/api"
 	"clean-web-api/config"
 	"clean-web-api/data/cache"
+	"clean-web-api/data/db"
+	"log"
 )
 
 func main() {
 	cfg := config.GetConfig()
-	cache.InitRedis(cfg)
+	err := cache.InitRedis(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer cache.CloseRedis()
+	err = db.InitDb(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.CloseDb()
 	api.InitServer(cfg)
 
 }
