@@ -15,13 +15,18 @@ type Config struct {
 	Redis    RedisConfig
 	Password PasswordConfig
 	Cors     CorsConfig
+	Logger   LoggerConfig
 }
 
 type ServerConfig struct {
 	Port    string
 	RunMode string
 }
-
+type LoggerConfig struct {
+	FilePath string
+	Encoding string
+	Level    string
+}
 type PostgresConfig struct {
 	Host     string
 	Port     string
