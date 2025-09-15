@@ -12,37 +12,38 @@ import (
 	"github.com/go-redis/redis/v7"
 )
 
+
 type OtpService struct {
-	logger logging.Logger
-	cfg    *config.Config
-	redisClient  *redis.Client
+	logger      logging.Logger
+	cfg         *config.Config
+	redisClient *redis.Client
 }
 
-type OtpDto struct{
+type OtpDto struct {
 	Value string
-	Used bool
+	Used  bool
 }
 
 func NewOtpService(cfg *config.Config) *OtpService {
 	logger := logging.NewLogger(cfg)
 	redis := cache.GetRedis()
 	return &OtpService{logger: logger, cfg: cfg, redisClient: redis}
-
 }
 
-func(s *OtpService) SetOtp(mobileNumber string, otp string) error{
-	key := fmt.Sprintf("%s:%s",constants.RedisOtpDefaultKey,mobileNumber)
+func (s *OtpService) SetOtp(mobileNumber string, otp string) error {
+	key := fmt.Sprintf("%s:%s", constants.RedisOtpDefaultKey, mobileNumber)
 	val := &OtpDto{
 		Value: otp,
-		Used: false,
+		Used:  false,
 	}
-	res , err := cache.Get[OtpDto](s.redisClient, key)
+
+	res, err := cache.Get[OtpDto](s.redisClient, key)
 	if err == nil && !res.Used {
 		return &service_errors.ServiceError{EndUserMessage: service_errors.OtpExist}
-	}else if err == nil && res.Used {
-		return  &service_errors.ServiceError{EndUserMessage: service_errors.OtpUsed}
+	} else if err == nil && res.Used {
+		return &service_errors.ServiceError{EndUserMessage: service_errors.OtpUsed}
 	}
-	err = cache.Set(s.redisClient, key,val,s.cfg.Otp.ExpireTime*time.Second)
+	err = cache.Set(s.redisClient, key, val, s.cfg.Otp.ExpireTime*time.Second)
 	if err != nil {
 		return err
 	}
@@ -61,7 +62,7 @@ func (s *OtpService) ValidateOtp(mobileNumber string, otp string) error {
 	} else if err == nil && !res.Used && res.Value == otp {
 		res.Used = true
 		err = cache.Set(s.redisClient, key, res, s.cfg.Otp.ExpireTime*time.Second)
-		
+
 	}
 	return nil
 }

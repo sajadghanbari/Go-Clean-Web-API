@@ -36,7 +36,7 @@ password:
   maxLength: 64
   includeUppercase: true
   includeLowercase: true
-otp:
+Otp:
   expireTime: 120
   digits: 6
   limiter: 100

@@ -30,10 +30,10 @@ type LoggerConfig struct {
 	Logger   string
 }
 
-type OtpConfig struct{
+type OtpConfig struct {
 	ExpireTime time.Duration
-	Digits int
-	Limiter time.Duration
+	Digits     int
+	Limiter    time.Duration
 }
 
 type PostgresConfig struct {

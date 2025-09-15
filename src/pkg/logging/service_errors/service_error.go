@@ -1,11 +1,11 @@
 package service_errors
 
-type ServiceError struct{
-	EndUserMessage  string `json:"endUserMessage"`
+type ServiceError struct {
+	EndUserMessage   string `json:"endUserMessage"`
 	TechnicalMessage string `json:"technicalMessage"`
-	Err error
+	Err              error
 }
 
-func (s *ServiceError) Error() string{
+func (s *ServiceError) Error() string {
 	return s.EndUserMessage
 }
