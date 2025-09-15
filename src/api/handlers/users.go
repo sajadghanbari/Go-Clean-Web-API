@@ -67,7 +67,7 @@ func (h *UsersHandler) RegisterByUsername(c *gin.Context) {
 			helper.GenerateBaseResponseWithValidationError(nil, false, -1, err))
 		return
 	}
-	err = h.service.RegisterByUsername(*req)
+	err = h.service.RegisterByUsername(req)
 	if err != nil {
 		c.AbortWithStatusJSON(helper.TranslateErrorToStatusCode(err),
 			helper.GenerateBaseResponseWithError(nil, false, -1, err))

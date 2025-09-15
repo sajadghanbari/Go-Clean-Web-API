@@ -26,74 +26,50 @@ func NewUserService(cfg *config.Config) *UserService {
 	database := db.GetDb()
 	logger := logging.NewLogger(cfg)
 	return &UserService{
-		cfg:        cfg,
-		database:   database,
-		logger:     logger,
-		otpService: NewOtpService(cfg),
+		cfg:          cfg,
+		database:     database,
+		logger:       logger,
+		otpService:   NewOtpService(cfg),
+		tokenService: NewTokenService(cfg),
 	}
 }
 
-func (s *UserService) SendOtp(req *dto.GetOtpRequest) error {
-	otp := common.GenerateOtp()
-	err := s.otpService.SetOtp(req.MobileNumber, otp)
+// Login by username
+func (s *UserService) LoginByUsername(req *dto.LoginByUsernameRequest) (*dto.TokenDetail, error) {
+	var user models.User
+	err := s.database.
+		Model(&models.User{}).
+		Where("username = ?", req.Username).
+		Preload("UserRoles", func(tx *gorm.DB) *gorm.DB {
+			return tx.Preload("Role")
+		}).
+		Find(&user).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if err != nil {
+		return nil, err
+	}
+	tdto := tokenDto{UserId: user.Id, FirstName: user.FirstName, LastName: user.LastName,
+		Email: user.Email, MobileNumber: user.MobileNumber}
+
+	if len(*user.UserRoles) > 0 {
+		for _, ur := range *user.UserRoles {
+			tdto.Roles = append(tdto.Roles, ur.Role.Name)
+		}
+	}
+
+	token, err := s.tokenService.GenerateToken(&tdto)
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
+
 }
 
-func (s *UserService) existsByEmail(email string) (bool, error) {
-	var exists bool
-	if err := s.database.Model(&models.User{}).
-		Select("count(*) > 0").
-		Where("email = ?", email).
-		Find(&exists).
-		Error; err != nil {
-		s.logger.Error(logging.Postgres, logging.Select, err.Error(), nil)
-		return false, err
-	}
-	return exists, nil
-}
-
-func (s *UserService) existsByUsername(username string) (bool, error) {
-	var exists bool
-	if err := s.database.Model(&models.User{}).
-		Select("count(*) > 0").
-		Where("username = ?", username).
-		Find(&exists).
-		Error; err != nil {
-		s.logger.Error(logging.Postgres, logging.Select, err.Error(), nil)
-		return false, err
-	}
-	return exists, nil
-}
-
-func (s *UserService) existsByMobileNumber(mobileNumber string) (bool, error) {
-	var exists bool
-	if err := s.database.Model(&models.User{}).
-		Select("count(*) > 0").
-		Where("mobile_number = ?", mobileNumber).
-		Find(&exists).
-		Error; err != nil {
-		s.logger.Error(logging.Postgres, logging.Select, err.Error(), nil)
-		return false, err
-	}
-	return exists, nil
-}
-
-func (s *UserService) getDefaultRole() (roleId int, err error) {
-
-	if err = s.database.Model(&models.Role{}).
-		Select("id").
-		Where("name = ?", constants.DefaultRoleName).
-		First(&roleId).Error; err != nil {
-		return 0, err
-	}
-	return roleId, nil
-}
-
-// register by username
-func (s *UserService) RegisterByUsername(req dto.RegisterUserByUsernameRequest) error {
+// Register by username
+func (s *UserService) RegisterByUsername(req *dto.RegisterUserByUsernameRequest) error {
 	u := models.User{Username: req.Username, FirstName: req.FirstName, LastName: req.LastName, Email: req.Email}
 
 	exists, err := s.existsByEmail(req.Email)
@@ -115,7 +91,7 @@ func (s *UserService) RegisterByUsername(req dto.RegisterUserByUsernameRequest) 
 	hp, err := bcrypt.GenerateFromPassword(bp, bcrypt.DefaultCost)
 	if err != nil {
 		s.logger.Error(logging.General, logging.HashPassword, err.Error(), nil)
-		return nil
+		return err
 	}
 	u.Password = string(hp)
 	roleId, err := s.getDefaultRole()
@@ -139,10 +115,10 @@ func (s *UserService) RegisterByUsername(req dto.RegisterUserByUsernameRequest) 
 	}
 	tx.Commit()
 	return nil
+
 }
 
-//register/login by mobile number
-
+// Register/login by mobile number
 func (s *UserService) RegisterLoginByMobileNumber(req *dto.RegisterLoginByMobileRequest) (*dto.TokenDetail, error) {
 	err := s.otpService.ValidateOtp(req.MobileNumber, req.Otp)
 	if err != nil {
@@ -240,36 +216,61 @@ func (s *UserService) RegisterLoginByMobileNumber(req *dto.RegisterLoginByMobile
 
 }
 
-//login by username
-func (s *UserService) LoginByUsername(req *dto.LoginByUsernameRequest) (*dto.TokenDetail, error) {
-	var user models.User
-	err := s.database.
-		Model(&models.User{}).
-		Where("username = ?", req.Username).
-		Preload("UserRoles", func(tx *gorm.DB) *gorm.DB {
-			return tx.Preload("Role")
-		}).
-		Find(&user).Error
+func (s *UserService) SendOtp(req *dto.GetOtpRequest) error {
+	otp := common.GenerateOtp()
+	err := s.otpService.SetOtp(req.MobileNumber, otp)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
-	if err != nil {
-		return nil, err
-	}
-	tdto := tokenDto{UserId: user.Id, FirstName: user.FirstName, LastName: user.LastName,
-		Email: user.Email, MobileNumber: user.MobileNumber}
+	return nil
+}
 
-	if len(*user.UserRoles) > 0 {
-		for _, ur := range *user.UserRoles {
-			tdto.Roles = append(tdto.Roles, ur.Role.Name)
-		}
+func (s *UserService) existsByEmail(email string) (bool, error) {
+	var exists bool
+	if err := s.database.Model(&models.User{}).
+		Select("count(*) > 0").
+		Where("email = ?", email).
+		Find(&exists).
+		Error; err != nil {
+		s.logger.Error(logging.Postgres, logging.Select, err.Error(), nil)
+		return false, err
 	}
+	return exists, nil
+}
 
-	token, err := s.tokenService.GenerateToken(&tdto)
-	if err != nil {
-		return nil, err
+func (s *UserService) existsByUsername(username string) (bool, error) {
+	var exists bool
+	if err := s.database.Model(&models.User{}).
+		Select("count(*) > 0").
+		Where("username = ?", username).
+		Find(&exists).
+		Error; err != nil {
+		s.logger.Error(logging.Postgres, logging.Select, err.Error(), nil)
+		return false, err
 	}
-	return token, nil
+	return exists, nil
+}
 
+func (s *UserService) existsByMobileNumber(mobileNumber string) (bool, error) {
+	var exists bool
+	if err := s.database.Model(&models.User{}).
+		Select("count(*) > 0").
+		Where("mobile_number = ?", mobileNumber).
+		Find(&exists).
+		Error; err != nil {
+		s.logger.Error(logging.Postgres, logging.Select, err.Error(), nil)
+		return false, err
+	}
+	return exists, nil
+}
+
+func (s *UserService) getDefaultRole() (roleId int, err error) {
+
+	if err = s.database.Model(&models.Role{}).
+		Select("id").
+		Where("name = ?", constants.DefaultRoleName).
+		First(&roleId).Error; err != nil {
+		return 0, err
+	}
+	return roleId, nil
 }
