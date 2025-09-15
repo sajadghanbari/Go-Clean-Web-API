@@ -1,7 +1,7 @@
 package helper
 
 import (
-	"clean-web-api/pkg/logging/service_errors"
+	"clean-web-api/pkg/service_errors"
 	"net/http"
 )
 

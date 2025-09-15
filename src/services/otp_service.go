@@ -5,7 +5,7 @@ import (
 	"clean-web-api/constants"
 	"clean-web-api/data/cache"
 	"clean-web-api/pkg/logging"
-	"clean-web-api/pkg/logging/service_errors"
+	"clean-web-api/pkg/service_errors"
 	"fmt"
 	"time"
 
