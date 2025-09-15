@@ -16,6 +16,7 @@ type Config struct {
 	Password PasswordConfig
 	Cors     CorsConfig
 	Logger   LoggerConfig
+	Otp OtpConfig
 }
 
 type ServerConfig struct {
@@ -28,6 +29,13 @@ type LoggerConfig struct {
 	Level    string
 	Logger   string
 }
+
+type OtpConfig struct{
+	ExpireTime time.Duration
+	Digits int
+	Limiter time.Duration
+}
+
 type PostgresConfig struct {
 	Host     string
 	Port     string
