@@ -14,15 +14,20 @@ type Logger interface {
 	Warn(cat Category, sub SubCategory, msg string, extra map[ExtraKey]interface{})
 	Warnf(template string, args ...interface{})
 
-	Error( cat Category, sub SubCategory, msg string, extra map[ExtraKey]interface{})
-	Errorf( template string, args ...interface{})
+	Error(cat Category, sub SubCategory, msg string, extra map[ExtraKey]interface{})
+	Errorf(template string, args ...interface{})
 
-	Fatal( cat Category, sub SubCategory, msg string, extra map[ExtraKey]interface{})
-	Fatalf( template string, args ...interface{})
+	Fatal(cat Category, sub SubCategory, msg string, extra map[ExtraKey]interface{})
+	Fatalf(template string, args ...interface{})
 }
 
 func NewLogger(cfg *config.Config) Logger {
-	return NewZapLogger(cfg)
+	if cfg.Logger.Logger == "zap" {
+		return newZapLogger(cfg)
+	} else if cfg.Logger.Logger == "zerolog" {
+		return newZeroLogger(cfg)
+	}
+	panic("logger not supported")
 }
 
 // file <- filebeat -> elasticsearch -> kibana

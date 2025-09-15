@@ -2,16 +2,20 @@ package logging
 
 import (
 	"clean-web-api/config"
-	"sync"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-var once sync.Once
 var zapSinLogger *zap.SugaredLogger
-var logLevelMapping = map[string]zapcore.Level{
+
+type zapLogger struct {
+	cfg    *config.Config
+	logger *zap.SugaredLogger
+}
+
+var zapLogLevelMapping = map[string]zapcore.Level{
 	"debug": zapcore.DebugLevel,
 	"info":  zapcore.InfoLevel,
 	"warn":  zapcore.WarnLevel,
@@ -19,19 +23,14 @@ var logLevelMapping = map[string]zapcore.Level{
 	"fatal": zapcore.FatalLevel,
 }
 
-type zapLogger struct {
-	cfg    *config.Config
-	logger *zap.SugaredLogger
-}
-
-func NewZapLogger(cfg *config.Config) *zapLogger {
+func newZapLogger(cfg *config.Config) *zapLogger {
 	logger := &zapLogger{cfg: cfg}
 	logger.Init()
 	return logger
 }
 
 func (l *zapLogger) getLogLevel() zapcore.Level {
-	level, exists := logLevelMapping[l.cfg.Logger.Level]
+	level, exists := zapLogLevelMapping[l.cfg.Logger.Level]
 	if !exists {
 		return zapcore.DebugLevel
 	}
@@ -62,7 +61,8 @@ func (l *zapLogger) Init() {
 			zap.AddCallerSkip(1),
 			zap.AddStacktrace(zapcore.ErrorLevel),
 		).Sugar()
-     zapSinLogger = logger.With("AppName", "MyApp", "LoggerName", "Zaplog")
+
+		zapSinLogger = logger.With("AppName", "MyApp", "LoggerName", "Zaplog")
 	})
 
 	l.logger = zapSinLogger

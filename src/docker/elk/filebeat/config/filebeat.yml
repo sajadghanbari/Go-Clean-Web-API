@@ -11,7 +11,7 @@ filebeat.inputs:
       - "/app/logs/*.log"
     fields:
       environment: Development
-    tags: ["gocourse"]
+    tags: ["webapi"]
     multiline.pattern: "^{"
     multiline.negate: true
     multiline.match: after
@@ -53,7 +53,7 @@ processors:
 #                 - /var/lib/docker/containers/${data.docker.container.id}/app/logs/*.json
 #               fields:
 #                 environment: Docker
-#               tags: ["gocourse"]
+#               tags: ["webapi"]
 #               multiline.pattern: "^{"
 #               multiline.negate: true
 #               multiline.match: after
