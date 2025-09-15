@@ -19,6 +19,7 @@ const (
 	ExternalService SubCategory = "ExternalService"
 
 	// Postgres
+	Migration SubCategory = "Migration"
 	Select   SubCategory = "Select"
 	Rollback SubCategory = "Rollback"
 	Update   SubCategory = "Update"

@@ -5,8 +5,8 @@ import (
 	"clean-web-api/config"
 	"clean-web-api/data/cache"
 	"clean-web-api/data/db"
+	"clean-web-api/data/db/migrations"
 	"clean-web-api/pkg/logging"
-
 )
 
 // @securityDefinitions.apikey AuthBearer
@@ -24,6 +24,7 @@ func main() {
 	if err != nil {
 		logger.Fatal(logging.Postgres, logging.Startup, err.Error(),nil)
 	}
+	migrations.Up_1()
 	defer db.CloseDb()
 	api.InitServer(cfg)
 
