@@ -8,7 +8,7 @@ import (
 
 func ErrorHandler(c *gin.Context, err any) {
 	if err, ok := err.(error); ok {
-		httpResponse := helper.GenerateBaseResponseWithError(nil, false, -500, err.(error))
+		httpResponse := helper.GenerateBaseResponseWithError(nil, false, -500, err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, httpResponse)
 		return
 	}

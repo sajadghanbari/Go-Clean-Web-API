@@ -8,4 +8,7 @@ const (
 	OtpNotValid     = "Otp not valid"
 	EmailExists = "Email exists"
 	UsernameExists = "Username exists"
+	TokenRequired   = "token required"
+	TokenExpired    = "token expired"
+	TokenInvalid    = "token invalid"
 )
