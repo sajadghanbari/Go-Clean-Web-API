@@ -11,4 +11,5 @@ const (
 	TokenRequired   = "token required"
 	TokenExpired    = "token expired"
 	TokenInvalid    = "token invalid"
+	RecordNotFound = "record not found"
 )
