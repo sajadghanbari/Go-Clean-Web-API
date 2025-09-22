@@ -4,6 +4,7 @@ import (
 	"clean-web-api/config"
 	"math"
 	"math/rand"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -17,6 +18,9 @@ var (
 	numberSet      = "0123456789"
 	allCharSet     = lowerCharSet + upperCharSet + specialCharSet + numberSet
 )
+
+var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
 
 func CheckPassword(password string) bool {
 	cfg := config.GetConfig()
@@ -144,4 +148,10 @@ func HasDigits(s string) bool {
 		}
 	}
 	return false
+}
+
+func ToSnakeCase(str string) string {
+	snake := matchFirstCap.ReplaceAllString(str , "${1}_${2}")
+	snake = matchAllCap.ReplaceAllString(str , "${1}_${2}")
+	return strings.ToLower(snake)
 }
