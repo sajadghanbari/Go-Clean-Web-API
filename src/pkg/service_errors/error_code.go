@@ -3,7 +3,7 @@ package service_errors
 const (
 	UnExpectedError = "Expected error"
 	ClaimsNotFound  = "Claims not found"
-	OtpExist        = "Otp exist"
+	OtpExists       = "Otp exist"
 	OtpUsed         = "Otp used"
 	OtpNotValid     = "Otp not valid"
 	EmailExists = "Email exists"
@@ -12,4 +12,5 @@ const (
 	TokenExpired    = "token expired"
 	TokenInvalid    = "token invalid"
 	RecordNotFound = "record not found"
+	PermissionDenied = "permission denied"
 )
