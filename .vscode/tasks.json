@@ -8,7 +8,7 @@
             "args": [
                 "init",
                 "-g",
-                "cmd/main.go"
+                "cmd/main.go --parseDependency --parseInternal"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/src"
