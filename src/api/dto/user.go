@@ -12,8 +12,8 @@ type TokenDetail struct {
 
 type RegisterUserByUsernameRequest struct {
 	FirstName string `json:"firstName" binding:"required,min=3"`
-	LastName  string `json:"lastName" binding:"required,min=6"`
-	Username  string `json:"username" binding:"required,min=5"`
+	LastName  string `json:"lastName" binding:"required,min=5"`
+	Username  string `json:"username" binding:"required,min=4"`
 	Email     string `json:"email" binding:"min=6,email"`
 	Password  string `json:"password" binding:"required,password,min=6"`
 }
@@ -24,6 +24,6 @@ type RegisterLoginByMobileRequest struct {
 }
 
 type LoginByUsernameRequest struct {
-	Username string `json:"username" binding:"required,min=6"`
+	Username string `json:"username" binding:"required,min=5"`
 	Password string `json:"password" binding:"required,min=6"`
 }

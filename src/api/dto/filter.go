@@ -13,6 +13,7 @@ type Filter struct {
 	// text number
 	FilterType string `json:"filterType"`
 }
+
 type DynamicFilter struct {
 	Sort   *[]Sort           `json:"sort"`
 	Filter map[string]Filter `json:"filter"`
@@ -38,7 +39,8 @@ type PaginationInputWithFilter struct {
 }
 
 func (p *PaginationInputWithFilter) GetOffset() int {
-	return  (p.GetPageNumber() -1 ) * p.GetPageSize()
+	// 2 , 10 => 11-20
+	return (p.GetPageNumber() - 1) * p.GetPageSize()
 }
 
 func (p *PaginationInputWithFilter) GetPageSize() int {
