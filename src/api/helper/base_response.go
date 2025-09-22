@@ -5,28 +5,19 @@ import validation "clean-web-api/api/validation"
 type BaseHttpResponse struct {
 	Result           any                           `json:"result"`
 	Success          bool                          `json:"success"`
-	ResultCode       int                           `json:"resultCode"`
+	ResultCode       ResultCode                           `json:"resultCode"`
 	ValidationErrors *[]validation.ValidationError `json:"validationErrors"`
 	Error            any                           `json:"error"`
 }
 
-func GenerateBaseResponse(result any, success bool, resultCode int) *BaseHttpResponse {
+func GenerateBaseResponse(result any, success bool, resultCode ResultCode) *BaseHttpResponse {
 	return &BaseHttpResponse{Result: result,
 		Success:    success,
 		ResultCode: resultCode,
 	}
 }
 
-
-func GenerateBaseResponseWithAnyError(result any, success bool, resultCode int, err any) *BaseHttpResponse {
-	return &BaseHttpResponse{Result: result,
-		Success:    success,
-		ResultCode: resultCode,
-		Error:      err,
-	}
-}
-
-func GenerateBaseResponseWithError(result any, success bool, resultCode int, err error) *BaseHttpResponse {
+func GenerateBaseResponseWithError(result any, success bool, resultCode ResultCode, err error) *BaseHttpResponse {
 	return &BaseHttpResponse{Result: result,
 		Success:    success,
 		ResultCode: resultCode,
@@ -35,7 +26,15 @@ func GenerateBaseResponseWithError(result any, success bool, resultCode int, err
 
 }
 
-func GenerateBaseResponseWithValidationError(result any, success bool, resultCode int, err error) *BaseHttpResponse {
+func GenerateBaseResponseWithAnyError(result any, success bool, resultCode ResultCode, err any) *BaseHttpResponse {
+	return &BaseHttpResponse{Result: result,
+		Success:    success,
+		ResultCode: resultCode,
+		Error:      err,
+	}
+}
+
+func GenerateBaseResponseWithValidationError(result any, success bool, resultCode ResultCode, err error) *BaseHttpResponse {
 	return &BaseHttpResponse{Result: result,
 		Success:          success,
 		ResultCode:       resultCode,

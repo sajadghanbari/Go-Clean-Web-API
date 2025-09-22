@@ -5,14 +5,17 @@ import (
 	"clean-web-api/api/routers"
 	"clean-web-api/api/validation"
 	"clean-web-api/config"
-	"fmt"
 	"clean-web-api/docs"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"clean-web-api/pkg/logging"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
 func InitServer(cfg *config.Config) {
 	r := gin.New()
 
@@ -24,7 +27,8 @@ func InitServer(cfg *config.Config) {
 
 	RegisterRoutes(r, cfg)
 	RegisterSwagger(r, cfg)
-
+	logger := logging.NewLogger(cfg)
+	logger.Info(logging.General, logging.Startup, "Started", nil)
 	r.Run(fmt.Sprintf(":%s", cfg.Server.Port))
 }
 
@@ -33,15 +37,29 @@ func RegisterRoutes(r *gin.Engine, cfg *config.Config) {
 
 	v1 := api.Group("/v1")
 	{
+		// Test
 		health := v1.Group("/health")
 		test_router := v1.Group("/test" /*middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"})*/)
+		
+		// User
 		users := v1.Group("/users")
+		
+		// Base
 		countries := v1.Group("/countries", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
+		cities := v1.Group("/cities", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
+		files := v1.Group("/files", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
 
+		// Test
 		routers.Health(health)
 		routers.TestRouter(test_router)
+
+		// User
 		routers.User(users, cfg)
+
+		// Base
 		routers.Country(countries, cfg)
+		routers.City(cities, cfg)
+		routers.File(files, cfg)
 	}
 
 	v2 := api.Group("/v2")

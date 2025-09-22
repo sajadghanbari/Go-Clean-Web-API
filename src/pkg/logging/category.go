@@ -17,14 +17,14 @@ const (
 	// General
 	Startup         SubCategory = "Startup"
 	ExternalService SubCategory = "ExternalService"
-
+	IO              Category    = "IO"
 	// Postgres
 	Migration SubCategory = "Migration"
-	Select   SubCategory = "Select"
-	Rollback SubCategory = "Rollback"
-	Update   SubCategory = "Update"
-	Delete   SubCategory = "Delete"
-	Insert   SubCategory = "Insert"
+	Select    SubCategory = "Select"
+	Rollback  SubCategory = "Rollback"
+	Update    SubCategory = "Update"
+	Delete    SubCategory = "Delete"
+	Insert    SubCategory = "Insert"
 
 	// Internal
 	Api                 SubCategory = "Api"
@@ -34,6 +34,8 @@ const (
 	// Validation
 	MobileValidation   SubCategory = "MobileValidation"
 	PasswordValidation SubCategory = "PasswordValidation"
+	//IO
+	RemoveFile SubCategory = "RemoveFile"
 )
 
 const (

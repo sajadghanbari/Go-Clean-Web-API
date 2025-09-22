@@ -38,6 +38,7 @@ func (h *TestHandler) Users(c *gin.Context) {
 	c.JSON(http.StatusOK, helper.GenerateBaseResponse("Users", true, 0))
 
 }
+
 // UserById godoc
 // @Summary UserById
 // @Description UserById
@@ -95,7 +96,7 @@ func (h *TestHandler) HeaderBinder1(c *gin.Context) {
 
 func (h *TestHandler) HeaderBinder2(c *gin.Context) {
 	header := header{}
-	c.BindHeader(&header)
+	_ = c.BindHeader(&header)
 	c.JSON(http.StatusOK, helper.GenerateBaseResponse(gin.H{
 		"result": "HeaderBinder1",
 		"header": header,
@@ -124,6 +125,18 @@ func (h *TestHandler) QueryBinder2(c *gin.Context) {
 	}, true, 0))
 }
 
+// BodyBinder godoc
+// @Summary BodyBinder
+// @Description BodyBinder
+// @Tags Test
+// @Accept  json
+// @Produce  json
+// @Param id path int true "user id"
+// @Param name path string true "user name"
+// @Success 200 {object} helper.BaseHttpResponse{validationErrors=any{}} "Success"
+// @Failure 400 {object} helper.BaseHttpResponse "Failed"
+// @Router /v1/test/binder/uri/{id}/{name} [post]
+// @Security AuthBearer
 func (h *TestHandler) UriBinder(c *gin.Context) {
 	id := c.Param("id")
 	name := c.Param("name")
@@ -133,6 +146,7 @@ func (h *TestHandler) UriBinder(c *gin.Context) {
 		"name":   name,
 	}, true, 0))
 }
+
 // BodyBinder godoc
 // @Summary BodyBinder
 // @Description BodyBinder
@@ -150,7 +164,7 @@ func (h *TestHandler) BodyBinder(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest,
 			helper.GenerateBaseResponseWithValidationError(nil,
-				false, -1, err))
+				false, helper.ValidationError, err))
 		return
 	}
 	c.JSON(http.StatusOK, helper.GenerateBaseResponse(gin.H{
@@ -161,7 +175,7 @@ func (h *TestHandler) BodyBinder(c *gin.Context) {
 
 func (h *TestHandler) FormBinder(c *gin.Context) {
 	p := personData{}
-	c.ShouldBind(&p)
+	_ = c.ShouldBind(&p)
 	c.JSON(http.StatusOK, helper.GenerateBaseResponse(gin.H{
 		"result": "FormBinder",
 		"person": p,
@@ -173,7 +187,7 @@ func (h *TestHandler) FileBinder(c *gin.Context) {
 	err := c.SaveUploadedFile(file, "file")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError,
-			helper.GenerateBaseResponseWithError(nil, false, -1, err))
+			helper.GenerateBaseResponseWithError(nil, false, helper.ValidationError, err))
 		return
 	}
 	c.JSON(http.StatusOK, helper.GenerateBaseResponse(gin.H{
