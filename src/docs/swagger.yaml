@@ -38,6 +38,18 @@ definitions:
       name:
         type: string
     type: object
+  clean-web-api_api_dto.CreateCityRequest:
+    properties:
+      countryId:
+        type: integer
+      name:
+        maxLength: 20
+        minLength: 3
+        type: string
+    required:
+    - countryId
+    - name
+    type: object
   clean-web-api_api_dto.CreateUpdateCountryRequest:
     properties:
       name:
@@ -46,6 +58,19 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  clean-web-api_api_dto.FileResponse:
+    properties:
+      description:
+        type: string
+      directory:
+        type: string
+      id:
+        type: integer
+      mimeType:
+        type: string
+      name:
+        type: string
     type: object
   clean-web-api_api_dto.Filter:
     properties:
@@ -82,6 +107,23 @@ definitions:
     - password
     - username
     type: object
+  clean-web-api_api_dto.PagedList-clean-web-api_api_dto_CityResponse:
+    properties:
+      hasNextPage:
+        type: boolean
+      hasPreviousPage:
+        type: boolean
+      items:
+        items:
+          $ref: '#/definitions/clean-web-api_api_dto.CityResponse'
+        type: array
+      pageNumber:
+        type: integer
+      totalPages:
+        type: integer
+      totalRows:
+        type: integer
+    type: object
   clean-web-api_api_dto.PagedList-clean-web-api_api_dto_CountryResponse:
     properties:
       hasNextPage:
@@ -91,6 +133,23 @@ definitions:
       items:
         items:
           $ref: '#/definitions/clean-web-api_api_dto.CountryResponse'
+        type: array
+      pageNumber:
+        type: integer
+      totalPages:
+        type: integer
+      totalRows:
+        type: integer
+    type: object
+  clean-web-api_api_dto.PagedList-clean-web-api_api_dto_FileResponse:
+    properties:
+      hasNextPage:
+        type: boolean
+      hasPreviousPage:
+        type: boolean
+      items:
+        items:
+          $ref: '#/definitions/clean-web-api_api_dto.FileResponse'
         type: array
       pageNumber:
         type: integer
@@ -158,12 +217,26 @@ definitions:
       sort:
         type: string
     type: object
+  clean-web-api_api_dto.UpdateCityRequest:
+    properties:
+      countryId:
+        type: integer
+      name:
+        maxLength: 20
+        minLength: 3
+        type: string
+    type: object
+  clean-web-api_api_dto.UpdateFileRequest:
+    properties:
+      description:
+        type: string
+    type: object
   clean-web-api_api_helper.BaseHttpResponse:
     properties:
       error: {}
       result: {}
       resultCode:
-        type: integer
+        $ref: '#/definitions/clean-web-api_api_helper.ResultCode'
       success:
         type: boolean
       validationErrors:
@@ -171,6 +244,28 @@ definitions:
           $ref: '#/definitions/clean-web-api_api_validation.ValidationError'
         type: array
     type: object
+  clean-web-api_api_helper.ResultCode:
+    enum:
+    - 0
+    - 40001
+    - 40101
+    - 40301
+    - 40401
+    - 42901
+    - 42902
+    - 50001
+    - 50002
+    type: integer
+    x-enum-varnames:
+    - Success
+    - ValidationError
+    - AuthError
+    - ForbiddenError
+    - NotFoundError
+    - LimiterError
+    - OtpLimiterError
+    - CustomRecovery
+    - InternalError
   clean-web-api_api_validation.ValidationError:
     properties:
       message:
@@ -182,9 +277,188 @@ definitions:
       value:
         type: string
     type: object
+  multipart.FileHeader:
+    properties:
+      filename:
+        type: string
+      header:
+        $ref: '#/definitions/textproto.MIMEHeader'
+      size:
+        format: int64
+        type: integer
+    type: object
+  textproto.MIMEHeader:
+    additionalProperties:
+      items:
+        type: string
+      type: array
+    type: object
 info:
   contact: {}
 paths:
+  /v1/cities/:
+    post:
+      consumes:
+      - application/json
+      description: Create a City
+      parameters:
+      - description: Create a City
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/clean-web-api_api_dto.CreateCityRequest'
+      responses:
+        "201":
+          description: City response
+          schema:
+            allOf:
+            - $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/clean-web-api_api_dto.CityResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Create a City
+      tags:
+      - Cities
+  /v1/cities/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a City
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: response
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Delete a City
+      tags:
+      - Cities
+    get:
+      consumes:
+      - application/json
+      description: Get a City
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: City response
+          schema:
+            allOf:
+            - $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/clean-web-api_api_dto.CityResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Get a City
+      tags:
+      - Cities
+    put:
+      consumes:
+      - application/json
+      description: Update a City
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update a City
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/clean-web-api_api_dto.UpdateCityRequest'
+      responses:
+        "200":
+          description: City response
+          schema:
+            allOf:
+            - $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/clean-web-api_api_dto.CityResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Update a City
+      tags:
+      - Cities
+  /v1/cities/get-by-filter:
+    post:
+      consumes:
+      - application/json
+      description: Get Cities
+      parameters:
+      - description: Request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/clean-web-api_api_dto.PaginationInputWithFilter'
+      responses:
+        "200":
+          description: City response
+          schema:
+            allOf:
+            - $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/clean-web-api_api_dto.PagedList-clean-web-api_api_dto_CityResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Get Cities
+      tags:
+      - Cities
   /v1/countries/:
     post:
       consumes:
@@ -336,6 +610,160 @@ paths:
       summary: Get Countries
       tags:
       - Countries
+  /v1/files/:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Create a file
+      parameters:
+      - in: formData
+        name: description
+        required: true
+        type: string
+      - description: Create a file
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "201":
+          description: File response
+          schema:
+            allOf:
+            - $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/clean-web-api_api_dto.FileResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Create a file
+      tags:
+      - Files
+  /v1/files/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a file
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: response
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Delete a file
+      tags:
+      - Files
+    get:
+      consumes:
+      - application/json
+      description: Get a file
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: File response
+          schema:
+            allOf:
+            - $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/clean-web-api_api_dto.FileResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Get a file
+      tags:
+      - Files
+    put:
+      consumes:
+      - application/json
+      description: Update a file
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update a file
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/clean-web-api_api_dto.UpdateFileRequest'
+      responses:
+        "200":
+          description: File response
+          schema:
+            allOf:
+            - $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/clean-web-api_api_dto.FileResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Update a file
+      tags:
+      - Files
+  /v1/files/get-by-filter:
+    post:
+      consumes:
+      - application/json
+      description: Get Files
+      parameters:
+      - description: Request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/clean-web-api_api_dto.PaginationInputWithFilter'
+      responses:
+        "200":
+          description: File response
+          schema:
+            allOf:
+            - $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+            - properties:
+                result:
+                  $ref: '#/definitions/clean-web-api_api_dto.PagedList-clean-web-api_api_dto_FileResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Get Files
+      tags:
+      - Files
   /v1/health/:
     get:
       consumes:
@@ -367,6 +795,42 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/api_handlers.personData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+            - properties:
+                validationErrors: {}
+              type: object
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/clean-web-api_api_helper.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: BodyBinder
+      tags:
+      - Test
+  /v1/test/binder/uri/{id}/{name}:
+    post:
+      consumes:
+      - application/json
+      description: BodyBinder
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: user name
+        in: path
+        name: name
+        required: true
+        type: string
       produces:
       - application/json
       responses:
