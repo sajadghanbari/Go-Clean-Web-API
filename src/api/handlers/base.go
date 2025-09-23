@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	
 	"clean-web-api/api/helper"
 	"clean-web-api/config"
 	"clean-web-api/pkg/logging"
@@ -104,3 +105,4 @@ func GetByFilter[Ti any, To any](c *gin.Context, caller func(c context.Context, 
 	}
 	c.JSON(http.StatusOK, helper.GenerateBaseResponse(res, true, 0))
 }
+
