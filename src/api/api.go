@@ -14,7 +14,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	
 )
 
 var logger = logging.NewLogger(config.GetConfig())
@@ -54,10 +53,14 @@ func RegisterRoutes(r *gin.Engine, cfg *config.Config) {
 		countries := v1.Group("/countries", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
 		cities := v1.Group("/cities", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
 		files := v1.Group("/files", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
-
+		companies := v1.Group("/companies", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
 		// Property
 		properties := v1.Group("/properties", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
 		propertyCategories := v1.Group("/property-categories", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
+
+		// Car
+		carTypes := v1.Group("/car-types", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
+		gearboxes := v1.Group("/gearboxes", middlewares.Authentication(cfg), middlewares.Authorization([]string{"admin"}))
 		// Test
 		routers.Health(health)
 		routers.TestRouter(test_router)
@@ -69,10 +72,14 @@ func RegisterRoutes(r *gin.Engine, cfg *config.Config) {
 		routers.Country(countries, cfg)
 		routers.City(cities, cfg)
 		routers.File(files, cfg)
-
+		routers.Company(companies, cfg)
 		// Property
 		routers.Property(properties, cfg)
 		routers.PropertyCategory(propertyCategories, cfg)
+
+		// Car
+		routers.CarType(carTypes, cfg)
+		routers.Gearbox(gearboxes, cfg)
 	}
 
 	v2 := api.Group("/v2")
