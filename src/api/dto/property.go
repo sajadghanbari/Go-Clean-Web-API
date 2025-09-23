@@ -1,7 +1,7 @@
 package dto
 
 type CreatePropertyCategoryRequest struct {
-	Name string `json:"name" binding:"required,alpha,min=3,max=15"`
+	Name string `json:"name" binding:"required,alpha,min=3,max=50"`
 	Icon string `json:"icon" binding:"max=1000"`
 }
 
@@ -18,12 +18,12 @@ type PropertyCategoryResponse struct {
 }
 
 type CreatePropertyRequest struct {
-	Name        string `json:"name" binding:"required,alpha,min=3,max=15"`
+	Name        string `json:"name" binding:"required,alpha,min=3,max=50"`
 	CategoryId  int    `json:"categoryId" binding:"required"`
 	Icon        string `json:"icon" binding:"max=1000"`
 	Description string `json:"description" binding:"max=1000"`
-	DataType    string `json:"dataType" binding:"max=15"`
-	Unit        string `json:"unit" binding:"max=15"`
+	DataType    string `json:"dataType" binding:"max=50"`
+	Unit        string `json:"unit" binding:"max=50"`
 }
 
 type UpdatePropertyRequest struct {
@@ -31,8 +31,8 @@ type UpdatePropertyRequest struct {
 	CategoryId  int    `json:"categoryId,omitempty"`
 	Icon        string `json:"icon,omitempty" binding:"max=1000"`
 	Description string `json:"description,omitempty" binding:"max=1000"`
-	DataType    string `json:"dataType,omitempty" binding:"max=15"`
-	Unit        string `json:"unit,omitempty" binding:"max=15"`
+	DataType    string `json:"dataType,omitempty" binding:"max=50"`
+	Unit        string `json:"unit,omitempty" binding:"max=50"`
 }
 
 type PropertyResponse struct {
