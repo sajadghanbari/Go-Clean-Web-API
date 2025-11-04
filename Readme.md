@@ -104,26 +104,6 @@ Elastic Stack (ELK)
 
 Redis
 
-## 📂 Project Structure
 
-go-backend-service/
-│
-├── api/ → Route handlers & controllers
-├── cmd/ → Application entry points
-├── common/ → Shared helpers & utilities
-├── config/ → Configuration loading (YAML / ENV)
-├── constants/ → Global constants and enums
-├── data/ → Database migrations, seeds, SQLs
-├── docker/ → Dockerfiles and docker-compose setup
-├── docs/ → Swagger / API documentation
-├── logs/ → Application log outputs
-├── pkg/ → Reusable internal packages (logger, redis, etc.)
-├── script/ → Utility scripts (build, deploy, etc.)
-├── services/ → Core business logic
-├── src/ → Main source code and modules
-├── tests/ → Unit and integration tests
-│
-├── go.mod → Go module definition
-└── go.sum → Go dependency checksums
 
 
