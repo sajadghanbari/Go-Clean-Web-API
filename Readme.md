@@ -98,11 +98,12 @@ Zap Logger
 Swaggo
 
 Prometheus
- + Grafana
+Grafana
 
 Elastic Stack (ELK)
 
 Redis
+
 
 
 
