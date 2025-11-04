@@ -106,7 +106,8 @@ Redis
 
 ## 📂 Project Structure
 
-
+go-backend-service/
+│
 ├── api/ → Route handlers & controllers
 ├── cmd/ → Application entry points
 ├── common/ → Shared helpers & utilities
@@ -121,5 +122,8 @@ Redis
 ├── services/ → Core business logic
 ├── src/ → Main source code and modules
 ├── tests/ → Unit and integration tests
+│
 ├── go.mod → Go module definition
 └── go.sum → Go dependency checksums
+
+
